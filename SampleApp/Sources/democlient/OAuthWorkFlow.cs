@@ -108,7 +108,10 @@ namespace SampleApp.Sources.democlient
 
             Hammock.RestResponse response = client.Request(request);
 
-            Console.WriteLine("Token:" + response.Content.Split('&')[0].Split('=')[1] + " \n Token Secret:" + response.Content.Split('&')[1].Split('=')[1]);
+            String oauthToken = response.Content.Split('&')[0].Split('=')[1];
+            String oauthTokenSecret = response.Content.Split('&')[1].Split('=')[1];
+           
+            System.Diagnostics.Debug.WriteLine("Token:" + oauthToken + " \n Token Secret:" + HttpUtility.UrlDecode(oauthTokenSecret));
         }
 
         private static String cleanAuthorizationUri(String uri) {
