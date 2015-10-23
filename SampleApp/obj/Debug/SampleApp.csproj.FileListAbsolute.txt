@@ -18,3 +18,13 @@ C:\bench\SampleApplicationCSHarp\SampleApplication\SampleApp\bin\Debug\Newtonsof
 C:\bench\SampleApplicationCSHarp\SampleApplication\SampleApp\bin\Debug\Hammock.pdb
 C:\bench\SampleApplicationCSHarp\SampleApplication\SampleApp\bin\Debug\Newtonsoft.Json.xml
 C:\bench\SampleApplicationCSHarp\SampleApplication\SampleApp\obj\Debug\SampleApp.csprojResolveAssemblyReference.cache
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\SampleApp.exe.config
+C:\bench\SampleCode_C_Sharp\SampleApp\obj\Debug\SampleApp.exe
+C:\bench\SampleCode_C_Sharp\SampleApp\obj\Debug\SampleApp.pdb
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\SampleApp.exe
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\SampleApp.pdb
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\Hammock.dll
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\Newtonsoft.Json.dll
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\Hammock.pdb
+C:\bench\SampleCode_C_Sharp\SampleApp\bin\Debug\Newtonsoft.Json.xml
+C:\bench\SampleCode_C_Sharp\SampleApp\obj\Debug\SampleApp.csprojResolveAssemblyReference.cache
