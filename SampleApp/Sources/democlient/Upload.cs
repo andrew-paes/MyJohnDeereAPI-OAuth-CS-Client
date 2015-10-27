@@ -135,7 +135,7 @@ namespace SampleApp.Sources.democlient
             
             Hammock.RestRequest request = new Hammock.RestRequest()
             {
-                Path = fileUploadLink.uri,
+                Path = newFileLocation,
                 Method = WebMethod.Put
             };
 
