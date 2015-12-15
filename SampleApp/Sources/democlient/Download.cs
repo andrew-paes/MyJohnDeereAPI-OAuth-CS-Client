@@ -53,7 +53,7 @@ namespace SampleApp.Sources.democlient
             retrieveMetadataForFile();
 
             downloadFileContentsAndComputeMd5();
-            downloadFileInPiecesAndComputeMd5();
+            //downloadFileInPiecesAndComputeMd5();
         }
 
         public void getFiles() {
@@ -79,16 +79,15 @@ namespace SampleApp.Sources.democlient
 
             files = ds.deserialize<SampleApp.Sources.generated.v3.File>(response.Content);
 
-            Console.WriteLine("done");
-
      }
 
         public void retrieveMetadataForFile() {
 
-            Dictionary<String,Link> linksFromFirstFile = OAuthWorkFlow.linksFrom(files.page[3]);
-
+            generated.v3.File fileForMetaData = getValidFile(files);
+            Dictionary<String, Link> linksFromFirstFile = OAuthWorkFlow.linksFrom(fileForMetaData);
+            
             firstFileSelfUri = linksFromFirstFile["self"].uri;
-
+            
             Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
                 ApiCredentials.TOKEN.secret, null, null);
 
@@ -110,7 +109,25 @@ namespace SampleApp.Sources.democlient
             SampleApp.Sources.generated.v3.File firstFileDetails = Deserialise<SampleApp.Sources.generated.v3.File>(response.ContentStream);
 
             filename = firstFileDetails.name;
+            System.Diagnostics.Debug.WriteLine("File Name:" + filename + " \n File Size:" + firstFileDetails.nativeSize);
     }
+
+        private generated.v3.File getValidFile(CollectionPage<generated.v3.File> files)
+        {
+            generated.v3.File fileForMetaData = null;
+            for (int i = 0; i < files.page.Count; i++)
+            {
+                if (files.page[i].type != "INVALID" || files.page[i].type != "UNKNOWN")
+                {
+                    fileForMetaData = files.page[i];
+                    break;
+                }
+            }
+            if (fileForMetaData == null) {
+                System.Diagnostics.Debug.WriteLine(" No Files to download");
+            }
+        return fileForMetaData;
+        }
 
         public void downloadFileContentsAndComputeMd5() {
 
@@ -133,32 +150,12 @@ namespace SampleApp.Sources.democlient
             Hammock.RestResponse response = client.Request(request);
 
 
-            checkFilenameInContentDispositionHeader(response);
-
-            using (var md5 = MD5.Create())
+            using (Stream output = System.IO.File.OpenWrite("C:\\"+filename))
+            using (Stream input = response.ContentStream)
             {
-                using (var stream = response.ContentStream)
-                {
-                    md5FromSinglePieceDownload =  md5.ComputeHash(stream);
-                }
+                input.CopyTo(output);
             }
         }
-
-        private void checkFilenameInContentDispositionHeader( Hammock.RestResponse fileDetailsResponse) {
-            String contentDispositionHeader = "Content-Disposition";
-            //checkThat("Content-Disposition header set?", fileDetailsResponse.getHeaderFields().contains(contentDispositionHeader), isTrue());
-            String contentDisposition = fileDetailsResponse.Headers[contentDispositionHeader];
-            if (contentDisposition != null) {
-                Regex r = new Regex(contentDispositionHeader, RegexOptions.IgnoreCase);
-
-                // Match the regular expression pattern against a text string.
-                Match m = r.Match(contentDisposition);
-                int matchCount = 0;
-                if (m.Success) {
-                    ///checkThat("filename as reported by API", matcher.group(2), isEqualTo(filename));
-                }
-        }
-    }
 
         public void downloadFileInPiecesAndComputeMd5() {
              int fileSize = makeHeadRequestToGetFileSize();
@@ -171,9 +168,9 @@ namespace SampleApp.Sources.democlient
             getChunkFromStartAndRecurse(0, chunkSize, fileSize);
 
             //checkThat("md5 digest", byteDigest.getMessageDigest().digest(), isEqualTo(md5FromSinglePieceDownload));
-    }
+        }
 
-    private int makeHeadRequestToGetFileSize() {
+       private int makeHeadRequestToGetFileSize() {
          Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
                 ApiCredentials.TOKEN.secret, null, null);
 

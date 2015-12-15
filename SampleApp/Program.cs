@@ -26,14 +26,13 @@ namespace SampleApp
             of.retrieveApiCatalogToEstablishOAuthProviderDetails();  //Line 1
             of.getRequestToken();                                    //Line 2
             of.authorizeRequestToken();                              //Line 3
-            of.exchangeRequestTokenForAccessToken();                 //Line 4*/
+            of.exchangeRequestTokenForAccessToken();                 //Line 4
 
-            //Download dn = new Download();                            //Line 5 
-            /*Upload up = new Upload();                                //Line 6
+            //Download dn = new Download();
+            //dn.retrieveApiCatalog();
 
-            //up.addFile();
-
-            up.retrieveApiCatalog();      */                           //Line 7
+            //Upload up = new Upload();                                //Line 6
+            //up.retrieveApiCatalog();                                 //Line 7
             
         }
        
