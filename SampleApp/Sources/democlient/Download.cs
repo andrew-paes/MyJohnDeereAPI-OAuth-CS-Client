@@ -20,9 +20,24 @@ namespace SampleApp.Sources.democlient
         private CollectionPage<SampleApp.Sources.generated.v3.File> files;
         private String firstFileSelfUri;
         private String filename;
+        private long fileSize;
         private byte[] md5FromSinglePieceDownload;
 
         private byte[] md5FromMultiplePieceDownload;
+
+        private Hammock.RestClient getRestClient()
+        {
+            Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
+                ApiCredentials.TOKEN.secret, null, null);
+
+            Hammock.RestClient client = new Hammock.RestClient()
+            {
+                Authority = "",
+                Credentials = credentials
+            };
+            return client;
+
+        }
 
         public void retrieveApiCatalog()
         {
@@ -52,8 +67,8 @@ namespace SampleApp.Sources.democlient
 
             retrieveMetadataForFile();
 
-            downloadFileContentsAndComputeMd5();
-            //downloadFileInPiecesAndComputeMd5();
+           downloadFileContentsAndComputeMd5();
+           //downloadFileInPiecesAndComputeMd5();
         }
 
         public void getFiles() {
@@ -109,7 +124,8 @@ namespace SampleApp.Sources.democlient
             SampleApp.Sources.generated.v3.File firstFileDetails = Deserialise<SampleApp.Sources.generated.v3.File>(response.ContentStream);
 
             filename = firstFileDetails.name;
-            System.Diagnostics.Debug.WriteLine("File Name:" + filename + " \n File Size:" + firstFileDetails.nativeSize);
+            fileSize = firstFileDetails.nativeSize;
+            System.Diagnostics.Debug.WriteLine("File Name:" + filename + " \n File Size:" + fileSize);
     }
 
         private generated.v3.File getValidFile(CollectionPage<generated.v3.File> files)
@@ -158,57 +174,29 @@ namespace SampleApp.Sources.democlient
         }
 
         public void downloadFileInPiecesAndComputeMd5() {
-             int fileSize = makeHeadRequestToGetFileSize();
+            //Max file size for download is 50 MB
+            long maxFileSize = 52428800;
+            long start = 0;
+            long end = fileSize <= maxFileSize ? fileSize : maxFileSize;
+            if(!System.IO.File.Exists("C:\\"+filename)) {
+                System.IO.File.Create("C:\\"+filename).Dispose();
+            }
+            using (Stream output = System.IO.File.OpenWrite("C:\\" + filename))
 
-             int numberOfChunks = 2;
-             int chunkSize = (fileSize / numberOfChunks) - 1;
-             
-            //DigestOutputStream byteDigest = new DigestOutputStream(nullOutputStream(), getInstance("md5"));
-
-            getChunkFromStartAndRecurse(0, chunkSize, fileSize);
-
-            //checkThat("md5 digest", byteDigest.getMessageDigest().digest(), isEqualTo(md5FromSinglePieceDownload));
+            getChunkFromStartAndRecurse(0, end, fileSize, output);
+            
+            System.Diagnostics.Debug.WriteLine("File Name = " + filename);
+            System.Diagnostics.Debug.WriteLine("File Size(KB) = " + fileSize / 1024.0);
         }
 
-       private int makeHeadRequestToGetFileSize() {
-         Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
-                ApiCredentials.TOKEN.secret, null, null);
+        private void getChunkFromStartAndRecurse( long start, long chunkSize, long fileSize, Stream output) {
+             long maxRange = fileSize - 1;
+             long end = Math.Min(start + chunkSize, maxRange);
+             chunkSize = start + chunkSize < maxRange ? chunkSize : fileSize - start;
 
-
-            Hammock.RestClient client = new Hammock.RestClient()
-            {
-                Authority = "",
-                Credentials = credentials
-            };
-
-            Hammock.RestRequest request = new Hammock.RestRequest()
-            {
-                Path = firstFileSelfUri,
-                Method = WebMethod.Head
-            };
-
-            request.AddHeader("Accept", "application/zip");
-            Hammock.RestResponse response = client.Request(request);
-        /*if (!hasResponseCode(OK).matches(headRes)) {
-            firstFileSelfUri = null;
-            //fail(format("HEAD request to %s returned bad response code", firstFileSelfUri));
-        }*/
-        //checkThat("Content-Length header", headRes.getHeaderFields().contains("Content-Length"), isTrue());
-            return Convert.ToInt32(response.Headers["Content-Length"]);
-        //return Integer.valueOf(headRes.getHeaderFields().valueOf("Content-Length"));
-    }
-
-        private void getChunkFromStartAndRecurse( int start, int chunkSize, int fileSize
-                                                         //,DigestOutputStream byteDigest
-            ) {
-         int maxRange = fileSize - 1;
-         int end = Math.Min(start + chunkSize, maxRange);
-
-         Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
-                ApiCredentials.TOKEN.secret, null, null);
-
-
-            Hammock.RestClient client = new Hammock.RestClient()
+             Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
+             ApiCredentials.TOKEN.secret, null, null);
+             Hammock.RestClient client = new Hammock.RestClient()
             {
                 Authority = "",
                 Credentials = credentials
@@ -219,29 +207,18 @@ namespace SampleApp.Sources.democlient
                 Path = firstFileSelfUri,
                 Method = WebMethod.Get
             };
-
             request.AddHeader("Accept", "application/zip");
-            request.AddHeader("Range", "bytes=" + start + "-" + end );
+            request.AddParameter("offset", "" + start);
+            request.AddParameter("size", "" + chunkSize);
             Hammock.RestResponse response = client.Request(request);
-
-
-            using (var md5 = MD5.Create())
+            using (Stream input = response.ContentStream)
             {
-                using (var stream = response.ContentStream)
-                {
-                    md5FromMultiplePieceDownload = md5.ComputeHash(stream);
-                }
+                input.CopyTo(output);
             }
-
-        checkFilenameInContentDispositionHeader(response);
-
-       // copy(rangeResponse.getBody(), byteDigest);
-
-        if (start + chunkSize < maxRange) {
-            getChunkFromStartAndRecurse(start + chunkSize + 1, chunkSize, fileSize);
+            if (start + chunkSize < maxRange) {
+                getChunkFromStartAndRecurse(end, chunkSize, fileSize, output);
+            }
         }
-    }
-
 
      public static T Deserialise<T>(Stream stream)
         {
@@ -249,7 +226,5 @@ namespace SampleApp.Sources.democlient
             T result = (T)deserializer.ReadObject(stream);
             return result;
         }
-
-
     }
 }
