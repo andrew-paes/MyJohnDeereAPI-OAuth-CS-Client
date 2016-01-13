@@ -161,7 +161,7 @@ namespace SampleApp.Sources.democlient
             else
             {
                 createDownloadRequest(start, chunkSize, output);
-                getChunkFromStartAndRecurse(start + chunkSize + 1, chunkSize, fileSize - chunkSize, output);
+                getChunkFromStartAndRecurse(start + chunkSize, chunkSize, fileSize - chunkSize, output);
             }
         }
 
