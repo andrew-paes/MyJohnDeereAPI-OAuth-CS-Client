@@ -28,11 +28,11 @@ namespace SampleApp
             of.authorizeRequestToken();                              //Line 3
             of.exchangeRequestTokenForAccessToken();                 //Line 4
 
-            //Download dn = new Download();
+            //Download dn = new Download();                          //Line 5
             //dn.retrieveApiCatalog();
 
-            //Upload up = new Upload();                                //Line 6
-            //up.retrieveApiCatalog();                                 //Line 7
+            //Upload up = new Upload();                              //Line 6
+            //up.retrieveApiCatalog();                               //Line 7
             
         }
        
