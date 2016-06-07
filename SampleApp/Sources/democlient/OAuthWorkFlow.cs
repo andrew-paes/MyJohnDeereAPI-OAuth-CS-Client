@@ -25,7 +25,7 @@ namespace SampleApp.Sources.democlient
           
             Hammock.RestClient client = new Hammock.RestClient()
             {
-                Authority = "https://apicert.soa-proxy.deere.com/platform/",
+                Authority = "https://sandboxapi.deere.com/platform/",
                 Credentials = credentials
             };
             

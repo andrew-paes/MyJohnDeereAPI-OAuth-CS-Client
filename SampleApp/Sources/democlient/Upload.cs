@@ -39,7 +39,7 @@ namespace SampleApp.Sources.democlient
 
             Hammock.RestRequest request = new Hammock.RestRequest()
             {
-                Path = "https://apicert.soa-proxy.deere.com/platform/"
+                Path = "https://sandboxapi.deere.com/platform/"
             };
 
             request.AddHeader("Accept", "application/vnd.deere.axiom.v3+json");
