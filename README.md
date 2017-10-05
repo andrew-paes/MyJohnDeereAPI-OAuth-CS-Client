@@ -1,5 +1,28 @@
 # MyJohnDeereAPI-OAuth-CS-Client
+Sample C# application for My Johndeere API
 
-This app needs credentials from MyJohnDeere to run. Credentials are stored in ApiCredentials.cs. 
+## System Requirments
+Microsoft .Net Framework 4.6.2(Last tested) and Microsoft Visual Studio C# (community or higher)
 
-Run the Program.cs to generate the OAuth Token and Secret. Steps are outlined in this file.
+## Setup and Run
+<ul>
+  <li>Update ApiCredentials.cs with appId and secret from developer.deere.com.</li>
+  <li>Run Program.cs file to generate OAuth tokens. Update the generated tokens in ApiCredentials.cs "TOKEN" variable</li>
+  <li> To test file download comment the below lines: 
+     <ul>
+      <li>of.retrieveApiCatalogToEstablishOAuthProviderDetails();</li>
+      <li>of.getRequestToken();</li>                       
+      <li>of.authorizeRequestToken();</li>                          
+      <li>of.exchangeRequestTokenForAccessToken();</li>       
+    </ul>
+  </li>
+  <li>Then uncomment these lines and run the Program.cs file to download a file.
+  <ul>
+    <li>Download dn = new Download();</li>
+    <li>dn.retrieveApiCatalog();</li>
+    </ul>
+  </li>
+</ul>
+  
+  
+
