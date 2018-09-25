@@ -1,144 +1,97 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SampleApp.Sources.generated.v3;
-using System.IO;
-using System.Runtime.Serialization.Json;
-using Hammock.Authentication.OAuth;
-using System.Compat.Web;
+using DevDefined.OAuth.Consumer;
+using DevDefined.OAuth.Framework;
 
 namespace SampleApp.Sources.democlient
 {
-    class OAuthWorkFlow
+    public class OAuthWorkFlow
     {
-        private String authUri;
-        private String verifier;
-        Dictionary<String, Link> links;
-        String reqToken ;
-        String reqSecret;
+        private const string AuthenticationUrl = "https://sandboxapi.deere.com/platform/oauth/request_token";
+        private const string UserAuthorizeUrl = "https://my.deere.com/consentToUseOfData?oauth_token={0}";
+        private const string AccessTokenUrl = "https://sandboxapi.deere.com/platform/oauth/access_token";
 
-        public void retrieveApiCatalogToEstablishOAuthProviderDetails()
+        public ApiCredentials Authenticate(string applicationKey, string applicationSecret)
         {
-            Hammock.Authentication.OAuth.OAuthCredentials credentials = createOAuthCredentials(OAuthType.ProtectedResource, null, null, null, null);
-          
-            Hammock.RestClient client = new Hammock.RestClient()
-            {
-                Authority = "https://sandboxapi.deere.com/platform/",
-                Credentials = credentials
-            };
+            // Step 1: Get an oAuth request token using your application's key and secret
+            var requestToken = GetRequestToken(applicationKey, applicationSecret);
             
-            Hammock.RestRequest request = new Hammock.RestRequest()
-            {
-                Path = ""
-            };
-
-            request.AddHeader("Accept", "application/vnd.deere.axiom.v3+json");
-            Hammock.RestResponse response = client.Request(request);
-
-            MemoryStream stream1 = new MemoryStream();
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ApiCatalog));
-
-            stream1.Position = 0;
-            ApiCatalog apiCatalog = (ApiCatalog)ser.ReadObject(response.ContentStream);
-
-            links = linksFrom(apiCatalog);
-
-        }
-
-         public static Dictionary<String, Link> linksFrom(Resource res) {
-                
-             Dictionary<String, Link> map = new Dictionary<String, Link>();
-             
-             foreach(Link link in res.links) {
-                 map.Add(link.rel, link);
-             }
-             return map;
-        }
-
-         public void getRequestToken() 
-         {
-            Hammock.Authentication.OAuth.OAuthCredentials credentials = createOAuthCredentials(OAuthType.RequestToken, null, null, null, "oob");
-           
+            // Step 2: Get explicit consent from the user to access their data
+            var verificationCode = GetUserAuthorization(requestToken.Token);
             
-             Hammock.RestClient client = new Hammock.RestClient()
-            {
-                Authority = "",
-                Credentials = credentials
-            };
+            // Step 3: Exchange the oAuth request token and user verification code for an oAuth access token
+            return ExchangeRequestTokenForAccessToken(applicationKey, applicationSecret, requestToken, verificationCode);
+        }
 
-            Hammock.RestRequest request = new Hammock.RestRequest()
-            {
-                Path = links["oauthRequestToken"].uri
-            };
+        public void AuthenticateWithCallback(string applicationKey, string applicationSecret, string callbackUrl)
+        {
+            // This alternate version is useful if you have a webapp and can specify a callback URL
+            // It eliminates the need to copy/paste a verification code.
+            var oAuthSession = CreateOAuthSession(applicationKey, applicationSecret);
+            oAuthSession.RequestTokenUri = new Uri(AuthenticationUrl);
+            oAuthSession.CallbackUri = new Uri(callbackUrl);
+            var requestToken = oAuthSession.GetRequestToken();
 
-            Hammock.RestResponse response = client.Request(request);
+            var userAuthorizeUrl = oAuthSession.GetUserAuthorizationUrlForToken(requestToken, callbackUrl);
+            // Now, userAuthorizeUrl contains a website address. Send the user to that website address to sign in 
+            // and authorize your application. 
+            //
+            // On your server, there needs to be a service at uri {callbackUrl} that can accept the callback once
+            // the user authenticates. For an example of that, check out the DevDefined.OAuth project:
+            // https://github.com/bittercoder/DevDefined.OAuth/blob/master/src/DevDefined.OAuth.Wcf/OAuthInterceptor.cs
+        }
 
-            reqToken = response.Content.Split('&')[0];
+        private ApiCredentials ExchangeRequestTokenForAccessToken(string applicationKey, string applicationSecret, 
+                                                                  IToken requestToken, string verificationCode)
+        {
+            var oAuthSession = CreateOAuthSession(applicationKey, applicationSecret);
+            oAuthSession.AccessTokenUri = new Uri(AccessTokenUrl);
+            var accessToken = oAuthSession.ExchangeRequestTokenForAccessToken(requestToken, verificationCode);
             
-
-            authUri = cleanAuthorizationUri(links["oauthAuthorizeRequestToken"].uri) + "?" + reqToken;
-            reqToken =reqToken.Split('=')[1];
-            reqSecret = response.Content.Split('&')[1].Split('=')[1];
-
-        }
-
-        
-         public void authorizeRequestToken() {
-            Console.WriteLine("Please provide the verifier from "  + authUri);
-            verifier = Console.ReadLine();
-
-        }
-
-         public void exchangeRequestTokenForAccessToken() {
-            Hammock.Authentication.OAuth.OAuthCredentials credentials = createOAuthCredentials(OAuthType.AccessToken, reqToken, HttpUtility.UrlDecode(reqSecret), verifier, null);
-                  
-          
-            Hammock.RestClient client = new Hammock.RestClient()
+            return new ApiCredentials
             {
-                Authority = "",
-                Credentials = credentials
+                ClientKey = applicationKey,
+                ClientSecret = applicationSecret,
+                TokenKey = accessToken.Token,
+                TokenSecret = accessToken.TokenSecret
             };
+        }
 
-            Hammock.RestRequest request = new Hammock.RestRequest()
+        private IToken GetRequestToken(string applicationKey, string applicationSecret)
+        {
+            var oAuthSession = CreateOAuthSession(applicationKey, applicationSecret);
+            oAuthSession.RequestTokenUri = new Uri(AuthenticationUrl);
+            var requestToken = oAuthSession.GetRequestToken();
+
+            return requestToken;
+        }
+
+        private string GetUserAuthorization(string requestToken)
+        {
+            var userAuthorizationUrl = string.Format(UserAuthorizeUrl, requestToken);
+            
+            // This opens the default browser to https://my.deere.com/consentToUseOfData?oauth_token={token}
+            // If you have a webapp, just have the user navigate to this url.
+            //  
+            // Sign in to the MyJohnDeere login screen and grant your application access to your data.
+            // Once you are done, the screen should show a "verifier code". Enter the code into the application terminal.
+            System.Diagnostics.Process.Start(userAuthorizationUrl);
+
+            Console.WriteLine("Please enter the verifier code from your browser:");
+            var verificationCode = Console.ReadLine();
+
+            return verificationCode;
+        }
+
+        private OAuthSession CreateOAuthSession(string applicationKey, string applicationSecret)
+        {
+            var oAuthContext = new OAuthConsumerContext
             {
-                Path = links["oauthAccessToken"].uri
+                ConsumerKey = applicationKey,
+                ConsumerSecret = applicationSecret,
+                SignatureMethod = SignatureMethod.HmacSha1
             };
-
-            Hammock.RestResponse response = client.Request(request);
-
-            Console.WriteLine("Token:" + response.Content.Split('&')[0].Split('=')[1] + " \n Token Secret:" + response.Content.Split('&')[1].Split('=')[1]);
-            String oauthToken = response.Content.Split('&')[0].Split('=')[1];
-            String oauthTokenSecret = response.Content.Split('&')[1].Split('=')[1];
-
-            System.Diagnostics.Debug.WriteLine("Token:" + oauthToken + " \n Token Secret:" + HttpUtility.UrlDecode(oauthTokenSecret));
+            var oAuthSession = new OAuthSession(oAuthContext);
+            return oAuthSession;
         }
-
-        private static String cleanAuthorizationUri(String uri) {
-            return uri.Substring(0, uri.IndexOf("?"));
-        }
-
-
-        public static Hammock.Authentication.OAuth.OAuthCredentials createOAuthCredentials(OAuthType type, String strToken, String strSecret, String strVerifier, String strCallBack ){
-            Hammock.Authentication.OAuth.OAuthCredentials credentials = new Hammock.Authentication.OAuth.OAuthCredentials()
-            {
-                Type =type,
-                SignatureMethod = Hammock.Authentication.OAuth.OAuthSignatureMethod.HmacSha1,
-                ParameterHandling = Hammock.Authentication.OAuth.OAuthParameterHandling.HttpAuthorizationHeader,
-                ConsumerKey = SampleApp.Sources.democlient.ApiCredentials.CLIENT.key,
-                ConsumerSecret = SampleApp.Sources.democlient.ApiCredentials.CLIENT.secret,
-                Token = strToken,
-                TokenSecret = strSecret,
-                Verifier = strVerifier,
-                CallbackUrl = strCallBack
-            };
-            return credentials;
-
-        }
-
-        
-
-
     }
 }

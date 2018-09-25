@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevDefined.OAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a3261f5b4697e67d">
+      <HintPath>..\packages\DevDefined.OAuth.0.2\lib\DevDefined.OAuth.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -54,8 +57,6 @@
     <Compile Include="Sources\democlient\rest\CollectionPage.cs" />
     <Compile Include="Sources\democlient\rest\CollectionPageDeserializer.cs" />
     <Compile Include="Sources\democlient\rest\HttpHeader.cs" />
-    <Compile Include="Sources\democlient\rest\OAuthClient.cs" />
-    <Compile Include="Sources\democlient\rest\OAuthToken.cs" />
     <Compile Include="Sources\democlient\rest\RestRequestBuilder.cs" />
     <Compile Include="Sources\democlient\Upload.cs" />
     <Compile Include="Sources\generated\v3\ApiCatalog.cs" />
@@ -72,12 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\hammock-master\src\net40\Hammock\Hammock.csproj">
-      <Project>{cd569558-9092-466b-8670-ea1b151150e0}</Project>
-      <Name>Hammock</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

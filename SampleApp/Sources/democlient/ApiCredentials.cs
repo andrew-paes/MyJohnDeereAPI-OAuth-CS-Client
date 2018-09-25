@@ -1,15 +1,19 @@
-﻿using SampleApp.Sources.democlient.rest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SampleApp.Sources.democlient
+﻿namespace SampleApp.Sources.democlient
 {
-    abstract class ApiCredentials
+    public class ApiCredentials
     {
-        public static OAuthClient CLIENT = new OAuthClient("your app id from developer.deere.com", "your app secret from developer.deere.com");
-        public static OAuthToken TOKEN = new OAuthToken("token generated after running the oauth worflow code", "secret generated after running the oauth workflow code");
+        public string ClientKey { get; set; }
+        public string ClientSecret { get; set; }
+        public string TokenKey { get; set; }
+        public string TokenSecret { get; set; }
+
+        public ApiCredentials()
+        {
+            ClientKey = "Your application's 'App ID' from developer.deere.com";
+            ClientSecret = "Your application's 'Shared Secret' from developer.deere.com";
+
+            TokenKey = "This is generated from the oAuth workflow; see OAuthWorkFlow.GetRequestToken()";
+            TokenSecret = "This is generated from the oAuth workflow; see OAuthWorkFlow.GetRequestToken()";
+        }
     }
 }

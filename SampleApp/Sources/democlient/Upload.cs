@@ -22,16 +22,16 @@ namespace SampleApp.Sources.democlient
 
         private Hammock.RestClient getRestClient()
         {
-            Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
-                ApiCredentials.TOKEN.secret, null, null);
-
-            Hammock.RestClient client = new Hammock.RestClient()
-            {
-                Authority = "",
-                Credentials = credentials
-            };
-            return client;
-
+//            Hammock.Authentication.OAuth.OAuthCredentials credentials = OAuthWorkFlow.createOAuthCredentials(OAuthType.ProtectedResource, ApiCredentials.TOKEN.token,
+//                ApiCredentials.TOKEN.secret, null, null);
+//
+//            Hammock.RestClient client = new Hammock.RestClient()
+//            {
+//                Authority = "",
+//                Credentials = credentials
+//            };
+//            return client;
+            return null;
         }
         public void retrieveApiCatalog()
         {
@@ -47,7 +47,7 @@ namespace SampleApp.Sources.democlient
 
             ApiCatalog apiCatalog = Download.Deserialise<ApiCatalog>(response.ContentStream);
 
-            links = OAuthWorkFlow.linksFrom(apiCatalog);
+//            links = OAuthWorkFlow.linksFrom(apiCatalog);
 
 
             getCurrentUser();
@@ -69,7 +69,7 @@ namespace SampleApp.Sources.democlient
 
             Resource currentUser = Download.Deserialise<User>(response.ContentStream);
 
-            userOrganizations = OAuthWorkFlow.linksFrom(currentUser)["organizations"].uri;
+//            userOrganizations = OAuthWorkFlow.linksFrom(currentUser)["organizations"].uri;
 
         }
 
@@ -91,9 +91,9 @@ namespace SampleApp.Sources.democlient
             CollectionPage<Organization> organizations = ds.deserialize<SampleApp.Sources.generated.v3.Organization>(response.Content);
 
 
-            Dictionary<String, Link> linksFromFirst = OAuthWorkFlow.linksFrom(organizations.page[0]);
+//            Dictionary<String, Link> linksFromFirst = OAuthWorkFlow.linksFrom(organizations.page[0]);
 
-            fileUploadLink = linksFromFirst["uploadFile"];
+//            fileUploadLink = linksFromFirst["uploadFile"];
         }
         public MemoryStream Serialize1<T>(T obj)
         {
