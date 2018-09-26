@@ -1,8 +1,12 @@
-﻿using SampleApp.Sources.democlient;
+﻿using System;
+using System.Net.Http;
+using SampleApp.Sources.democlient;
+using SampleApp.Sources.democlient.rest;
+using SampleApp.Sources.generated.v3;
 
 namespace SampleApp
 {
-    class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
@@ -11,28 +15,29 @@ namespace SampleApp
             string clientSecret = "Your application's 'Shared Secret' from developer.deere.com";
 
             var oauthWorkflowExample = new OAuthWorkFlow();
+            // We currently support oAuth 1.0. You can dig in to the authentication code for an example using the
+            // open source DevDefined.OAuth libraries.
             var apiCredentials = oauthWorkflowExample.Authenticate(clientKey, clientSecret);
 
-
-//            /* For Oauth tokens please un-comment line 1 to line 4 also please plugin your App Id and Secret from https://developer.deere.com app profile in ApiCredentials.cs CLIENT constructor
-//             * Once access tokens are generated please plug te valus into  ApiCredentials.cs OAuthToken constructor
-//             * 
-//             * To run the file download example, please comment out Line 1 to Line 4 and un-comment Line 5
-//             * To run the file download example, please comment out Line 1 to Line 5 and un-comment Line 6
-//             */
-//
-//            of.retrieveApiCatalogToEstablishOAuthProviderDetails();  //Line 1
-//            of.getRequestToken();                                    //Line 2
-//            of.authorizeRequestToken();                              //Line 3
-//            of.exchangeRequestTokenForAccessToken();                 //Line 4
-//
-//            //Download dn = new Download();                          //Line 5
-//            //dn.retrieveApiCatalog();
-//
-//            //Upload up = new Upload();                              //Line 6
-//            //up.retrieveApiCatalog();                               //Line 7
-
+            // Now let's inject the credentials into our rest client and make some API calls
+            // Check out the RestClient source for how to use the oAuth token to sign requests
+            var restClient = new RestClient(apiCredentials);
+            GetApiCatalog(restClient);
         }
-       
+
+        private static void GetApiCatalog(RestClient restClient)
+        {
+            // The API Catalog is a collection of links to other available MyJohnDeere API's.
+            // It's an easy place to discover other API's that look interesting, or just explore what's available.
+            var restRequest = new RestRequest
+            {
+                Url = "https://sandboxapi.deere.com/platform/",
+                Method = HttpMethod.Get
+            };
+            var response = restClient.Execute(restRequest);
+            var apiCatalog = new Serializer().Deserialize<ApiCatalog>(response.GetBody());
+            
+            apiCatalog.links.ForEach(link => Console.WriteLine($"{link.rel}: {link.uri}"));
+        }
     }
 }

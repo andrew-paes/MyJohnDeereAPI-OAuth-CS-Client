@@ -11,7 +11,7 @@ namespace SampleApp.Sources.generated.v3
     class Resource
     {
          [DataMember]
-        internal List<Link> links;
+         internal List<Link> links;
          [DataMember]
          internal String id;
     }

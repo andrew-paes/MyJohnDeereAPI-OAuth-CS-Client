@@ -41,9 +41,6 @@ namespace SampleApp.Sources.generated.v3
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]    
     internal Boolean shared;
-   // [DataMember]
-    //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    //internal Boolean _new;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         internal string status;

@@ -9,6 +9,8 @@
 
         public ApiCredentials()
         {
+            // If you want to play around without needing to generate tokens every time, you could place your credentials
+            // in this constructor, go back to the Program.main method, and comment out the calls to OAuthWorkFlow.
             ClientKey = "Your application's 'App ID' from developer.deere.com";
             ClientSecret = "Your application's 'Shared Secret' from developer.deere.com";
 

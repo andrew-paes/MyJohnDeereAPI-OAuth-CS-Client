@@ -4,6 +4,8 @@ using DevDefined.OAuth.Framework;
 
 namespace SampleApp.Sources.democlient
 {
+    // For additional, non Deere specific examples of using the DevDefined.OAuth libraries, see:
+    // https://github.com/bittercoder/DevDefined.OAuth-Examples
     public class OAuthWorkFlow
     {
         private const string AuthenticationUrl = "https://sandboxapi.deere.com/platform/oauth/request_token";
