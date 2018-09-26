@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
@@ -15,13 +16,13 @@ namespace SampleApp.Sources.democlient.rest
             _credentials = credentials;
         }
         
-        public WebResponse Execute(RestRequest request)
+        public HttpWebResponse Execute(RestRequest request)
         {
             var signedRequest = CreateSignedOauthRequest(request);
             var httpWebRequest = signedRequest.ToWebRequest();
 
             var httpWebResponse = httpWebRequest.GetResponse();
-            return httpWebResponse;
+            return (HttpWebResponse) httpWebResponse;
         }
 
         private IConsumerRequest CreateSignedOauthRequest(RestRequest request)
@@ -41,9 +42,13 @@ namespace SampleApp.Sources.democlient.rest
                 TokenSecret = _credentials.TokenSecret
             };
 
-            var consumerRequest = new ConsumerRequest(oAuthContext, oAuthConsumerContext, accessToken);
-            return consumerRequest.WithAcceptHeader(request.Accept)
-                .WithRawContentType(request.ContentType).SignWithToken(accessToken);
+            var consumerRequest = new ConsumerRequest(oAuthContext, oAuthConsumerContext, accessToken)
+                .WithAcceptHeader(request.Accept)
+                .WithRawContentType(request.ContentType);
+            if(!request.IncludeHateoasLinks)
+                consumerRequest = consumerRequest.WithQueryParameters(new Dictionary<string, string>{{"ShowLinks", "none"}});
+
+            return consumerRequest.SignWithToken(accessToken);
         }
 
         private static OAuthContext MapRequestToOauthContext(RestRequest request)

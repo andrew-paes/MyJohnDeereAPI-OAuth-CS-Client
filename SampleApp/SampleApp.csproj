@@ -53,6 +53,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\democlient\ApiCredentials.cs" />
+    <Compile Include="Sources\democlient\ApiExamples.cs" />
     <Compile Include="Sources\democlient\OAuthWorkFlow.cs" />
     <Compile Include="Sources\democlient\rest\RestClient.cs" />
     <Compile Include="Sources\democlient\rest\RestRequest.cs" />

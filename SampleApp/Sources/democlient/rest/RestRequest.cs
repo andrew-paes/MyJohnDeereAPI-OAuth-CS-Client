@@ -6,12 +6,20 @@ namespace SampleApp.Sources.democlient.rest
 {
     public class RestRequest
     {
+        private string _url;
+
         public RestRequest()
         {
             Headers = StandardV3Headers();
+            QueryParameters = new Dictionary<string, string>();
         }
-        
-        public string Url { get; set; }
+
+        public string Url
+        {
+            get => MaximumPaginationSize.HasValue ? $"{_url};count={MaximumPaginationSize.Value}" : _url;
+            set => _url = value;
+        }
+
         public HttpMethod Method { get; set; }
         public byte[] BinaryPayload { get; set; }
         public string Payload
@@ -48,12 +56,22 @@ namespace SampleApp.Sources.democlient.rest
         // Default value: Deere's API V3
         public string ContentType { get; set; } = "application/vnd.deere.axiom.v3+json";
 
+        // If this is false, we'll add a query parameter ShowLinks=None
+        // While the links are great for discoverability, they can substantially increase the payload size and execution time of our requests.
+        public bool IncludeHateoasLinks { get; set; } = true;
+
+        // Any time we call an API that returns a collection, the result will be paginated. This sets the desired page size.
+        // The default value (if this is never specified) is 10. The current maximum value is 100. Setting it to 100 generally improves performance.
+        public int? MaximumPaginationSize { get; set; }
+
+        public Dictionary<string, string> QueryParameters { get; set; }
+
         private static Dictionary<string, string> StandardV3Headers()
         {
             return new Dictionary<string, string>
             {
                 // Some of our responses are quite large. You'll have a much more responsive application if you enable gzip.
-//                {"Accept-Encoding", "gzip"}
+                {"Accept-Encoding", "gzip"}
             };
         }
     }

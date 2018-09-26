@@ -1,57 +1,53 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SampleApp.Sources.generated.v3
 {
     [DataContract]
-    class File : Resource
+    public class File : Resource
     {
 
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal string name;
+    public string name;
 
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal string type;
+    public string type;
 
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal string createdTime;
+    public string createdTime;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal string modifiedTime;
+    public string modifiedTime;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal long nativeSize;
-    [DataMember]
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]    
-    internal string source;
+    public long nativeSize;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    internal Boolean transferPending;
-    [DataMember]
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]    
-    internal string visibleViaShare;
-    [DataMember]
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]    
-    internal Boolean shared;
+    public string source;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        internal string status;
+    public Boolean transferPending;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        internal string invalidFileReasonText;
+    public string visibleViaShare;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        internal String archived;
+    public Boolean shared;
     [DataMember]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        internal String success;
+    public string status;
+    [DataMember]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string invalidFileReasonText;
+    [DataMember]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public String archived;
+    [DataMember]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public String success;
     }
 }
