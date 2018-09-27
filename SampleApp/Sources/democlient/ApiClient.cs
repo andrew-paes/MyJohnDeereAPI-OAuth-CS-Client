@@ -7,13 +7,15 @@ using SampleApp.Sources.democlient.rest;
 
 namespace SampleApp.Sources.democlient
 {
-    public class ApiExamples
+    public class ApiClient
     {
-        private readonly RestClient _restClient;
+        private readonly OAuthSignedRestClient _oAuthSignedRestClient;
+        private Serializer _serializer;
 
-        public ApiExamples(ApiCredentials credentials)
+        public ApiClient(ApiCredentials credentials)
         {
-            _restClient = new RestClient(credentials);
+            _oAuthSignedRestClient = new OAuthSignedRestClient(credentials);
+            _serializer = new Serializer();
         }
 
         public IEnumerable<T> GetAllUsingPagination<T>(string endpointUrl)
@@ -56,12 +58,41 @@ namespace SampleApp.Sources.democlient
             return Tuple.Create(detagValue, response.GetResponseAsList<T>());
         }
 
+        public string PostNewObject<T>(string endpointUrl, T @object)
+        {
+            var restRequest = new RestRequest
+            {
+                Url = endpointUrl,
+                Method = HttpMethod.Post,
+                Payload = _serializer.Serialize(@object)
+            };
+            var response = ExecuteWithRetry(restRequest);
+            if(response.StatusCode == HttpStatusCode.BadRequest)
+                throw new WebException(response.GetBody());
+
+            return response.Headers.Get("Location");
+        }
+
+        public void PutBinaryPayload(string endpointUrl, byte[] payload)
+        {
+            var restRequest = new RestRequest
+            {
+                Url = endpointUrl,
+                Method = HttpMethod.Post,
+                ContentType = "application/octet-stream",
+                BinaryPayload = payload
+            };
+            var response = ExecuteWithRetry(restRequest);
+            if(response.StatusCode == HttpStatusCode.BadRequest)
+                throw new WebException(response.GetBody());
+        }
+
 		private HttpWebResponse ExecuteWithRetry(RestRequest request) {
 			var maxRetries = 4;
 			var numberOfAttempts = 0;
 			while (numberOfAttempts < maxRetries) 
 			{
-				var response = _restClient.Execute(request);
+				var response = _oAuthSignedRestClient.Execute(request);
 				// See https://developer.deere.com/#!documentation&doc=myjohndeere%2F429.htm
 				// Note System.Net.HttpStatusCode does not include 429, but C# enum handling allows non-specified values
 				if (response.StatusCode == (HttpStatusCode)429) {

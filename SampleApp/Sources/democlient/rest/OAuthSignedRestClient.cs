@@ -7,11 +7,11 @@ using DevDefined.OAuth.Storage.Basic;
 
 namespace SampleApp.Sources.democlient.rest
 {
-    public class RestClient
+    public class OAuthSignedRestClient
     {
         private readonly ApiCredentials _credentials;
 
-        public RestClient(ApiCredentials credentials)
+        public OAuthSignedRestClient(ApiCredentials credentials)
         {
             _credentials = credentials;
         }

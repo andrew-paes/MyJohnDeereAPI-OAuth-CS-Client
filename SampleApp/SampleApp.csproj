@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevDefined.OAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a3261f5b4697e67d">
@@ -53,9 +55,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\democlient\ApiCredentials.cs" />
-    <Compile Include="Sources\democlient\ApiExamples.cs" />
+    <Compile Include="Sources\democlient\ApiClient.cs" />
+    <Compile Include="Sources\democlient\FilesApiExamples.cs" />
     <Compile Include="Sources\democlient\OAuthWorkFlow.cs" />
-    <Compile Include="Sources\democlient\rest\RestClient.cs" />
+    <Compile Include="Sources\democlient\rest\OAuthSignedRestClient.cs" />
     <Compile Include="Sources\democlient\rest\RestRequest.cs" />
     <Compile Include="Sources\democlient\rest\Serializer.cs" />
     <Compile Include="Sources\democlient\rest\WebResponseExtensions.cs" />
@@ -71,6 +74,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Resources\GS3 - 2630 Setup Data.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
