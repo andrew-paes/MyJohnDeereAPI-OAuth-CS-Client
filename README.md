@@ -7,6 +7,7 @@ Sample C# application for My Johndeere API
 
 ## Setup and Run
 <ul>
+  <li>Restore NuGet packages, if necessary, and ensure the project compiles.</li>
   <li>Update Program.cs with appId and secret from developer.deere.com.</li>
   <li>Run Program.cs file to generate OAuth tokens.</li>
   <li>OAuth tokens are valid for one year. To continue experimenting with the sample code:
