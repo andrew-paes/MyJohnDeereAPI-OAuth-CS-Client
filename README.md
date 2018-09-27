@@ -2,9 +2,8 @@
 Sample C# application for My Johndeere API
 
 ## System Requirements
-Microsoft .Net Framework 4.6+ and Microsoft Visual Studio 2017+ (community or higher)
-Or,
-Mono 5.0+ and some IDE with NuGet support (tested with MonoDevelop)
+ - Microsoft .Net Framework 4.6+ and Microsoft Visual Studio 2017+ (community or higher)
+ - Or, Mono 5.0+ and some IDE with NuGet support (tested with MonoDevelop)
 
 ## Setup and Run
 <ul>
