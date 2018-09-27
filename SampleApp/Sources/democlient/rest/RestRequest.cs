@@ -58,6 +58,7 @@ namespace SampleApp.Sources.democlient.rest
 
         // If this is false, we'll add a query parameter ShowLinks=None
         // While the links are great for discoverability, they can substantially increase the payload size and execution time of our requests.
+        // See https://developer.deere.com/#!documentation&doc=myjohndeere%2Flinks.htm
         public bool IncludeHateoasLinks { get; set; } = true;
 
         // Any time we call an API that returns a collection, the result will be paginated. This sets the desired page size.

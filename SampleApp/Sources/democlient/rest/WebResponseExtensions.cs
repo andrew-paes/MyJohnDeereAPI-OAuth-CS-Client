@@ -12,7 +12,7 @@ namespace SampleApp.Sources.democlient.rest
 
         public static string GetBody(this HttpWebResponse webResponse)
         {
-            var responseStream = webResponse.GetResponseStream();
+            var responseStream = webResponse?.GetResponseStream();
             if (responseStream == null)
                 return null;
 

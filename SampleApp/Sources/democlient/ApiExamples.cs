@@ -71,13 +71,14 @@ namespace SampleApp.Sources.democlient
 				{
 					// Sorry. Something probably went wrong on our end. 
 					// Exponential backoff raises the odds that waiting a few milliseconds results in a successful retry
-					Thread.Sleep(Math.Pow (10, numberOfAttempts + 1));
+					Thread.Sleep((int) Math.Pow(10, numberOfAttempts + 1));
 				} else 
 				{
 					return response;
 				}
 				numberOfAttempts++;
 			}
+		    return null;
 		}
     }
 }
