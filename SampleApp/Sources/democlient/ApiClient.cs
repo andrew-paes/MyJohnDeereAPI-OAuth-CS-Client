@@ -10,7 +10,7 @@ namespace SampleApp.Sources.democlient
     public class ApiClient
     {
         private readonly OAuthSignedRestClient _oAuthSignedRestClient;
-        private Serializer _serializer;
+        private readonly Serializer _serializer;
 
         public ApiClient(ApiCredentials credentials)
         {
@@ -18,13 +18,17 @@ namespace SampleApp.Sources.democlient
             _serializer = new Serializer();
         }
 
-        public IEnumerable<T> GetAllUsingPagination<T>(string endpointUrl)
+        // Unless you are using Deere ETags, every API that returns a collection will be wrapped in a paginated response.
+        // A CollectionPage includes a list of objects and links to the previous and next pages of data.
+        public IEnumerable<T> GetAllUsingPagination<T>(string endpointUrl, Dictionary<string, string> queryParams = null)
         {
             var restRequest = new RestRequest
             {
                 Url = endpointUrl,
                 Method = HttpMethod.Get
             };
+            if (queryParams != null)
+                restRequest.QueryParameters = queryParams;
             do
             {
 				var response = ExecuteWithRetry(restRequest);
@@ -42,7 +46,7 @@ namespace SampleApp.Sources.democlient
             } while (restRequest.Url != null);
         }
 
-        public Tuple<string, List<T>> GetListUsingDetag<T>(string endpointUrl, string detagValue)
+        public Tuple<string, List<T>> GetListUsingDetag<T>(string endpointUrl, string detagValue, Dictionary<string, string> queryParams = null)
         {
             var restRequest = new RestRequest
             {
@@ -50,7 +54,9 @@ namespace SampleApp.Sources.democlient
                 Method = HttpMethod.Get,
                 Detag = detagValue
             };
-			var response = ExecuteWithRetry(restRequest);
+            if (queryParams != null)
+                restRequest.QueryParameters = queryParams;
+            var response = ExecuteWithRetry(restRequest);
             detagValue = response.Headers.Get("x-deere-signature");
 
             if (response.StatusCode == HttpStatusCode.NotModified)
@@ -96,8 +102,8 @@ namespace SampleApp.Sources.democlient
 				// See https://developer.deere.com/#!documentation&doc=myjohndeere%2F429.htm
 				// Note System.Net.HttpStatusCode does not include 429, but C# enum handling allows non-specified values
 				if (response.StatusCode == (HttpStatusCode)429) {
-					var secondsToWait = Int32.Parse (response.Headers.Get ("Retry-After"));
-					Thread.Sleep (1000 * secondsToWait);
+					var secondsToWait = Int32.Parse(response.Headers.Get ("Retry-After"));
+					Thread.Sleep(1000 * secondsToWait);
 				} else if (response.StatusCode == HttpStatusCode.ServiceUnavailable || response.StatusCode == HttpStatusCode.InternalServerError) 
 				{
 					// Sorry. Something probably went wrong on our end. 

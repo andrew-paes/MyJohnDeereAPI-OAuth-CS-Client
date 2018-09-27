@@ -16,6 +16,7 @@ namespace SampleApp.Sources.democlient.rest
             if (responseStream == null)
                 return null;
 
+            // The GZipStream is required because we always add an Accept-Encoding=gzip header in RestRequest
             using (var gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
             {
                 using (var reader = new StreamReader(gzipStream))
