@@ -7,14 +7,10 @@ namespace SampleApp.Sources.generated.v3
     [DataContract]
     public class CollectionPage<T> {
         [DataMember]
-        public int totalSize;
+        public int total;
         [DataMember]
-        public Uri nextPage;
+        public List<Link> links;
         [DataMember]
-        public Uri prevPage;
-        [DataMember]
-        public Uri self;
-        [DataMember]
-        public List<T> page;
+        public List<T> values;
     }
 }

@@ -30,7 +30,9 @@ namespace SampleApp.Sources.democlient
         {
             foreach (var org in organizations)
             {
-                var filesApiUrl = org.links.Single(link => link.rel == LinkRel.files.ToString()).uri;
+                var filesApiUrl = org.links.SingleOrDefault(link => link.rel == LinkRel.files.ToString())?.uri;
+                if (filesApiUrl == null)
+                    continue;
 
                 // The first time, we don't have a Deere ETag value. Pass null -- it will return the entire list without pagination, and give you an ETag
                 var filesResult = _apiClient.GetListUsingDetag<File>(filesApiUrl, null);
@@ -48,7 +50,9 @@ namespace SampleApp.Sources.democlient
 
         private void UploadNewFileToOrganization(Organization organization)
         {
-            var filesApiUrl = organization.links.Single(link => link.rel == LinkRel.files.ToString()).uri;
+            var filesApiUrl = organization.links.SingleOrDefault(link => link.rel == LinkRel.files.ToString())?.uri;
+            if (filesApiUrl == null)
+                return;
             var file = new File {name = "GS3 - 2630 Setup Data.zip"};
             var fileUrl = _apiClient.PostNewObject(filesApiUrl, file);
 

@@ -36,8 +36,9 @@ namespace SampleApp.Sources.democlient.rest
         public static List<T> GetResponseAsList<T>(this HttpWebResponse webResponse)
         {
             var payload = webResponse.GetBody();
+            var collectionPage = JsonSerializer.Deserialize<CollectionPage<T>>(payload);
 
-            return JsonSerializer.Deserialize<List<T>>(payload);
+            return collectionPage.values;
         }
 
         public static T GetResponseAsObject<T>(this HttpWebResponse webResponse)

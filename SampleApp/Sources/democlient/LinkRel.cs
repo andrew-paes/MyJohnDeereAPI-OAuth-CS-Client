@@ -30,6 +30,7 @@
         varieties,
         addVariety,
         assets,
-        notifications
+        notifications,
+        nextPage
     }
 }

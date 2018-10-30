@@ -7,9 +7,11 @@ namespace SampleApp.Sources.generated.v3
     [DataContract]
     public class Resource
     {
-         [DataMember]
-         public List<Link> links;
-         [DataMember]
-         public String id;
+        [DataMember]
+        public List<Link> links;
+        [DataMember]
+        public String id;
+        [DataMember]
+        public String @type;
     }
 }

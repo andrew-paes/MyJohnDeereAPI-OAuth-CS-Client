@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using SampleApp.Sources.democlient.rest;
+using System.Linq;
 
 namespace SampleApp.Sources.democlient
 {
@@ -36,13 +37,13 @@ namespace SampleApp.Sources.democlient
 
 				// If the page is null, then we got an empty response. 
 				// Maybe your user can't access any organizations, or maybe you requested data and there wasn't any.
-                if (resultPage?.page == null)
+                if (resultPage?.values == null)
                     yield break;
-                foreach (var returnedElement in resultPage.page)
+                foreach (var returnedElement in resultPage.values)
                 {
                     yield return returnedElement;
                 }
-                restRequest.Url = resultPage.nextPage.AbsoluteUri;
+                restRequest.Url = resultPage.links.SingleOrDefault(link => link.rel == LinkRel.nextPage.ToString())?.uri;
             } while (restRequest.Url != null);
         }
 

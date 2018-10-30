@@ -35,4 +35,4 @@ Examples*/
 *.testrunconfig
 publish.xml
 TestResults
-SampleApp/Sources/democlient/ApiCredentials.cs
+*.ide

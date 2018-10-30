@@ -21,8 +21,15 @@ namespace SampleApp.Sources.democlient.rest
             var signedRequest = CreateSignedOauthRequest(request);
             var httpWebRequest = signedRequest.ToWebRequest();
 
-            var httpWebResponse = httpWebRequest.GetResponse();
-            return (HttpWebResponse) httpWebResponse;
+            try
+            {
+                var httpWebResponse = httpWebRequest.GetResponse();
+                return (HttpWebResponse)httpWebResponse;
+            } catch(WebException ex)
+            {
+                return ex.Response as HttpWebResponse;
+            }
+            
         }
 
         private IConsumerRequest CreateSignedOauthRequest(RestRequest request)
