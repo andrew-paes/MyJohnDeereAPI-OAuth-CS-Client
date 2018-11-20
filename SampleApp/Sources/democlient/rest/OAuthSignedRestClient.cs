@@ -70,7 +70,6 @@ namespace SampleApp.Sources.democlient.rest
             if (request.BinaryPayload != null)
             {
                 oAuthContext.RawContent = request.BinaryPayload;
-                oAuthContext.RawContentType = request.Headers["Content-Type"];
             }
 
             return oAuthContext;

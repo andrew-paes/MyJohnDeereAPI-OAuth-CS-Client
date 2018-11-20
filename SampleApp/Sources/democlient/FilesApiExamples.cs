@@ -22,8 +22,18 @@ namespace SampleApp.Sources.democlient
             // request, instead of re-downloading the entire list every time.
             // See https://developer.deere.com/#!documentation&doc=.%2Fmyjohndeere%2FdeereTags.htm
             GetAllFilesUsingDetags(organizations);
+            Organization organization = null;
+            foreach (var org in organizations) { 
+                var fileUploadApiUrl = org.links.SingleOrDefault(link => link.rel == LinkRel.uploadFile.ToString())?.uri;
+                if(fileUploadApiUrl != null)
+                {
+                    organization = org;
+                    break;
+                }
 
-            UploadNewFileToOrganization(organizations.First());
+            }
+            UploadNewFileToOrganization(organization);
+            
         }
 
         private void GetAllFilesUsingDetags(IEnumerable<Organization> organizations)
@@ -56,8 +66,9 @@ namespace SampleApp.Sources.democlient
             var file = new File {name = "GS3 - 2630 Setup Data.zip"};
             var fileUrl = _apiClient.PostNewObject(filesApiUrl, file);
 
-            var sampleFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GS3 - 2630 Setup Data.zip");
-            var fileContents = System.IO.File.ReadAllBytes(sampleFilePath);
+            var RunningPath = AppDomain.CurrentDomain.BaseDirectory;
+            string FileName = string.Format("{0}Resources\\GS3 - 2630 Setup Data.zip", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\")));
+            var fileContents = System.IO.File.ReadAllBytes(FileName);
             _apiClient.PutBinaryPayload(fileUrl, fileContents);
         }
     }

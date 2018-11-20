@@ -85,7 +85,8 @@ namespace SampleApp.Sources.democlient
             var restRequest = new RestRequest
             {
                 Url = endpointUrl,
-                Method = HttpMethod.Post,
+                Method = HttpMethod.Put,
+                Accept = "application/vnd.deere.axiom.v3+json",
                 ContentType = "application/octet-stream",
                 BinaryPayload = payload
             };
