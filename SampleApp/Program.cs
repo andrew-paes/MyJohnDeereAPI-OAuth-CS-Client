@@ -27,12 +27,12 @@ namespace SampleApp
 
             var apiClient = new ApiClient(apiCredentials);
             var organizationsLink = apiCatalog.links.Single(link => link.rel == LinkRel.organizations.ToString());
-            var organizations = apiClient.GetAllUsingPagination<Organization>(organizationsLink.uri);
+            var organizations = apiClient.GetAllUsingPagination<Organization>(organizationsLink.uri).ToList();
 
             // Examples of downloading all files using Detags, and uploading a new file
-            new FilesApiExamples(apiClient).MakeFilesApiCalls(organizations.ToList());
+            new FilesApiExamples(apiClient).MakeFilesApiCalls(organizations);
             // How to get all fields for an organization, optionally embedding clients, farms, and boundaries
-            new FieldsApiExamples(apiClient).MakeFieldsApiCalls(organizations.ToList());
+            new FieldsApiExamples(apiClient).MakeFieldsApiCalls(organizations);
         }
 
         private static ApiCatalog GetApiCatalog(OAuthSignedRestClient oAuthSignedRestClient)
