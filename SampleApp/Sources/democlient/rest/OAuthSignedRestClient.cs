@@ -52,8 +52,14 @@ namespace SampleApp.Sources.democlient.rest
             var consumerRequest = new ConsumerRequest(oAuthContext, oAuthConsumerContext, accessToken)
                 .WithAcceptHeader(request.Accept)
                 .WithRawContentType(request.ContentType);
-            if(!request.IncludeHateoasLinks)
-                consumerRequest = consumerRequest.WithQueryParameters(new Dictionary<string, string>{{"ShowLinks", "none"}});
+
+            Dictionary<String, String> queryParams = request.QueryParameters ?? new Dictionary<String, String>();
+            if (!request.IncludeHateoasLinks)
+            {
+                queryParams.Add("ShowLinks", "none");
+            }
+
+            consumerRequest = consumerRequest.WithQueryParameters(queryParams);
 
             return consumerRequest.SignWithToken(accessToken);
         }
