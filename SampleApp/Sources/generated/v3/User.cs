@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SampleApp.Sources.generated.v3
 {
     [DataContract]
-    class User : Resource
+    public class User : Resource
     {
         [DataMember] internal String accountName;
         [DataMember] internal String givenName;

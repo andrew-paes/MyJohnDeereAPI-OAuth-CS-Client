@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using SampleApp.Sources.democlient;
@@ -33,6 +34,10 @@ namespace SampleApp
             new FilesApiExamples(apiClient).MakeFilesApiCalls(organizations);
             // How to get all fields for an organization, optionally embedding clients, farms, and boundaries
             new FieldsApiExamples(apiClient).MakeFieldsApiCalls(organizations);
+            // Want to get operational data for a field?
+            // In reality we'd probably call the Fields API and use its output to get FieldOperations for each Field.
+            var fields = new List<Field>();
+            new FieldOperationsApiExamples(apiClient).MakeFieldOperationsApiCalls(fields);
         }
 
         private static ApiCatalog GetApiCatalog(OAuthSignedRestClient oAuthSignedRestClient)

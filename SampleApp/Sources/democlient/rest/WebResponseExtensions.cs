@@ -16,13 +16,21 @@ namespace SampleApp.Sources.democlient.rest
             if (responseStream == null)
                 return null;
 
-            // The GZipStream is required because we always add an Accept-Encoding=gzip header in RestRequest
-            using (var gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+            // The response is usually gzip-compressed since we always set an Accept-Encoding of gzip on RestRequest's
+            if (webResponse.Headers.Get("Content-Encoding").ToLower().Contains("gzip"))
             {
-                using (var reader = new StreamReader(gzipStream))
+                using (var gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
                 {
-                    return reader.ReadToEnd();
+                    using (var reader = new StreamReader(gzipStream))
+                    {
+                        return reader.ReadToEnd();
+                    }
                 }
+            }
+            // If the response wasn't gzip-compressed, just read and return the result.
+            using (var reader = new StreamReader(responseStream))
+            {
+                return reader.ReadToEnd();
             }
         }
 

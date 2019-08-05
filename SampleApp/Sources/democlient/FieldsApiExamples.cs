@@ -30,9 +30,11 @@ namespace SampleApp.Sources.democlient
             // Simply gets a list of Fields for this organization
             var fields = _apiClient.GetAllUsingPagination<Field>(fieldsUri);
             // Get a list of Fields with their associated Clients and Farms
-            var fieldsWithClientAndFarmEmbedded = _apiClient.GetAllUsingPagination<Field>(fieldsUri, new Dictionary<string, string> {{"embed", "clients,farms"}});
+            var fieldsWithClientAndFarmEmbedded = _apiClient.GetAllUsingPagination<Field>(fieldsUri, 
+                new Dictionary<string, string> {{"embed", "clients,farms"}});
             // Get a list of Fields with their associated Boundaries
-            var fieldsWithActiveBoundaryEmbedded = _apiClient.GetAllUsingPagination<Field>(fieldsUri, new Dictionary<string, string> {{"embed", "boundaries"}});
+            var fieldsWithActiveBoundaryEmbedded = _apiClient.GetAllUsingPagination<Field>(fieldsUri, 
+                new Dictionary<string, string> {{"embed", "boundaries"}});
         }
     }
 }

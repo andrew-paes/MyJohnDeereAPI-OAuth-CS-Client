@@ -15,6 +15,7 @@
         addField,
         boundaries,
         fieldOperation,
+        shapeFileAsync,
         files,
         transferableFiles,
         uploadFile,
